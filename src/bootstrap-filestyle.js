@@ -76,7 +76,7 @@
 				return this.options.buttonBefore;
 			}
 		},
-		
+
 		input : function(value) {
 			if (value === true) {
 				if (!this.options.input) {
@@ -117,7 +117,7 @@
 				return this.options.size;
 			}
 		},
-		
+
 		placeholder : function(value) {
 			if (value !== undefined) {
 				this.options.placeholder = value;
@@ -125,7 +125,7 @@
 			} else {
 				return this.options.placeholder;
 			}
-		},		
+		},
 
 		text : function(value) {
 			if (value !== undefined) {
@@ -135,7 +135,7 @@
 				return this.options.text;
 			}
 		},
-		
+
 		btnClass : function(value) {
 			if (value !== undefined) {
 				this.options.btnClass = value;
@@ -208,16 +208,20 @@
 			} else {
 				this.$elementFilestyle.find(':text').val('');
 			}
-			
+
 			return files;
 		},
 
+		isSizeSmall : function() {
+			return this.options.size == 'sm';
+		},
+
 		constructor : function() {
-			var _self = this, 
-				html = '', 
-				id = _self.$element.attr('id'), 
-				files = [], 
-				btn = '', 
+			var _self = this,
+				html = '',
+				id = _self.$element.attr('id'),
+				files = [],
+				btn = '',
 				$label;
 
 			if (id === '' || !id) {
@@ -228,16 +232,17 @@
                 nextId++;
 			}
 
-			btn = '<span class="group-span-filestyle ' + (_self.options.input ? 'input-group-btn' : '') + '">' + 
+			btn = '<span class="group-span-filestyle ' + (_self.options.input ? 'input-group-btn' : '') + '">' +
 			  '<label for="' + id + '" style="margin-bottom: 0;" class="btn ' + _self.options.btnClass + ' ' +
-			(_self.options.size == 'nr' ? '' : 'btn-' + _self.options.size) + '" ' + 
-			(_self.options.disabled || _self.$element.attr('disabled') ? ' disabled="true"' : '') + '>' + 
-			_self.htmlIcon() + '<span class="buttonText">' + _self.options.text + '</span>' + 
-			  '</label>' + 
+			(_self.options.size == 'nr' ? '' : 'btn-' + _self.options.size) + '" ' +
+			(_self.options.disabled || _self.$element.attr('disabled') ? ' disabled="true"' : '') + '>' +
+			_self.htmlIcon() + '<span class="buttonText">' + _self.options.text + '</span>' +
+			  '</label>' +
 			  '</span>';
-			
+
+			var inputGroupSm = _self.isSizeSmall() ? 'input-group-sm' : '';
 			html = _self.options.buttonBefore ? btn + _self.htmlInput() : _self.htmlInput() + btn;
-			_self.$elementFilestyle = $('<div class="bootstrap-filestyle input-group"><div name="filedrag"></div>' + html + '</div>');
+			_self.$elementFilestyle = $('<div class="bootstrap-filestyle input-group ' + inputGroupSm + '"><div name="filedrag"></div>' + html + '</div>');
 			_self.$elementFilestyle.find('.group-span-filestyle').attr('tabindex', "0").keypress(function(e) {
 			if (e.keyCode === 13 || e.charCode === 32) {
 				_self.$elementFilestyle.find('label').click();
@@ -251,10 +256,28 @@
 				'clip' : 'rect(0px 0px 0px 0px)' // using 0px for work in IE8
 			}).attr('tabindex', "-1").after(_self.$elementFilestyle);
 
-			_self.$elementFilestyle.find(_self.options.buttonBefore ? 'label' : ':input').css({
-				'border-top-left-radius': '.25rem',
-				'border-bottom-left-radius': '.25rem'
-			});
+			var squareCorners = {
+				left: {
+					'border-top-left-radius': 0,
+					'border-bottom-left-radius': 0
+				},
+				right: {
+					'border-top-right-radius': 0,
+					'border-bottom-right-radius': 0
+				}
+			};
+
+			var $button = _self.$elementFilestyle.find('label');
+			var $textInput = _self.$elementFilestyle.find(':input');
+
+			if (_self.options.buttonBefore) {
+				$button.css(squareCorners.right);
+				$textInput.css(squareCorners.left);
+			}
+			else {
+				$textInput.css(squareCorners.right);
+				$button.css(squareCorners.left);
+			}
 
 			_self.$elementFilestyle.find('[name="filedrag"]').css({
 				position: 'absolute',
@@ -349,7 +372,7 @@
 								}
 
 				        		$('[name="filedrag"]').css('z-index', '-1');
-				            }   
+				            }
 				        }
 				    }
 				);
